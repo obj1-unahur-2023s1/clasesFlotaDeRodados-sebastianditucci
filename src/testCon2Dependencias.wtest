@@ -1,0 +1,77 @@
+import dependencias.*
+import rodados.*
+import interioresMotores.*
+import pedidos.*
+describe "dependencias" {
+	const deportes = new Dependencia(cantidadEmpleados = 45)
+	const cultura = new Dependencia(cantidadEmpleados = 31)
+	const cachito = new Corsa(color = "rojo")
+	const pedido = new Pedido(distanciaARecorrer = 960, tiempoMaximo = 8, cantidadDePasajeros = 4)
+	method initialize() {
+		deportes.agregarAFlota(cachito)
+		deportes.agregarAFlota(new Corsa(color = "azul"))
+		deportes.agregarAFlota(new Corsa(color = "verde"))
+		deportes.agregarAFlota(new RenaultKwid(tieneTanqueAdicional = true))
+		deportes.agregarAFlota(new AutoEspecial(capacidad = 5, velocidadMaxima = 160, peso = 1200, color = "beige"))
+		cultura.agregarAFlota(cachito)
+		cultura.agregarAFlota(new RenaultKwid(tieneTanqueAdicional = true))
+		cultura.agregarAFlota(new RenaultKwid(tieneTanqueAdicional = true))
+		cultura.agregarAFlota(new RenaultKwid(tieneTanqueAdicional = false))
+		trafic.interior(popular)
+		trafic.motor(bataton)
+		cultura.agregarAFlota(trafic)
+		pedido.agregarColorIncompatible("azul")
+		pedido.agregarColorIncompatible("negro")
+	}
+	test "peso total de la flota deportes" {
+		assert.equals(6450, deportes.pesoTotalDeFlota())
+	}
+	test "peso total de la flota cultura" {
+		assert.equals(10700, cultura.pesoTotalDeFlota())
+	}
+	test "esta bien equipada la flota deportes" {
+		assert.that(deportes.estaBienEquipada())
+	}
+	test "no esta bien equipada la flota cultura" {
+		assert.notThat(cultura.estaBienEquipada())
+	}
+	test "capacidad total en color azul de la flota deportes" {
+		assert.equals(7, deportes.capacidadTotalEnColor("azul"))
+	}
+	test "capacidad total en color azul de la flota cultura" {
+		assert.equals(10, cultura.capacidadTotalEnColor("azul"))
+	}
+	test "color del rodado mas rapido de la flota deportes" {
+		assert.equals("beige", deportes.colorDelRodadoMasRapido())
+	}
+	test "color del rodado mas rapido de la flota cultura" {
+		assert.equals("rojo", cultura.colorDelRodadoMasRapido())
+	}
+	test "la flota deportes es grande" {
+		assert.that(deportes.esGrande())
+	}
+	test "la flota cultura no es grande" {
+		assert.notThat(cultura.esGrande())
+	}
+	test "capacidad faltante de la flota deportes" {
+		assert.equals(25, deportes.capacidadFaltante())
+	}
+	test "capacidad faltante de la flota cultura" {
+		assert.equals(5, cultura.capacidadFaltante())
+	}
+	test "cachito puede statisfacer al pedido" {
+		assert.that(pedido.puedeSerSatisfechoPor(cachito))
+	}
+	test "cachito no puede satisfacer al pedido con rojo en los colores incompatibles" {
+		pedido.agregarColorIncompatible("rojo")
+		assert.notThat(pedido.puedeSerSatisfechoPor(cachito))
+	}
+	test "cachito no puede satisfacer al pedido con 6 pasajeros" {
+		pedido.cantidadDePasajeros(6)
+		assert.notThat(pedido.puedeSerSatisfechoPor(cachito))
+	}
+	test "cachito no puede satisfacer al pedido si el tiempo maximo es 6" {
+		pedido.tiempoMaximo(6)
+		assert.notThat(pedido.puedeSerSatisfechoPor(cachito))
+	}
+}
